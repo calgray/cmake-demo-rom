@@ -34,7 +34,7 @@ foreach(SRC_FILE ${LIBDRAGON_SRCS})
         CMAKE_FIND_ROOT_PATH_BOTH
     )
     # message("${SRC_FILE} >> ${FATFS_SRC_FILE}") # debug helper
-    list(APPEND CHIBIOS_LIBDRAGON_SOURCES ${LIBDRAGON_SRC_FILE})
+    list(APPEND LIBDRAGON_SOURCES ${LIBDRAGON_SRC_FILE})
 endforeach()
 
 include(FindPackageHandleStandardArgs)
