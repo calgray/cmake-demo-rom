@@ -13,7 +13,7 @@ message(STATUS "Building for hardware: ${HARDWARE_TYPE} with SDK: ${SDK_TYPE}")
 
 # make sure the version is set
 if(NOT BUILD_VERSION)
-	set(BUILD_VERSION 0.0.1)
+    set(BUILD_VERSION 0.0.1)
 endif()
 
 string(REPLACE "." ";" VERSION_LIST ${BUILD_VERSION})
@@ -22,81 +22,87 @@ list(GET VERSION_LIST 1 BUILD_VER_MINOR)
 list(GET VERSION_LIST 2 BUILD_VER_REV)
 
 project(BUILD-DEMO #rename for your ROM name
-		VERSION ${BUILD_VERSION}
-		LANGUAGES C ASM)
+        VERSION ${BUILD_VERSION}
+        LANGUAGES C ASM)
 
 
-set( ELF_NAME 			${PROJECT_NAME}.elf )
-set( BIN_NAME 			${PROJECT_NAME}.bin )
-set( ROM_NAME 			${PROJECT_NAME}.v64 )
+set( ELF_NAME             ${PROJECT_NAME}.elf )
+set( BIN_NAME             ${PROJECT_NAME}.bin )
+set( ROM_NAME             ${PROJECT_NAME}.v64 )
 
 set( LINKER_FILE_NAME "${LIBDRAGON_PREFIX}/lib/n64.ld" )
 set(ROM_HEADER ${LIBDRAGON_PREFIX}/lib/header)
 
+# find libdragon
+set(LIBDRAGON_INCLUDE_DIRS ${LIBDRAGON_PREFIX}/include)
+set(LIBDRAGON_LIB_DIRS ${LIBDRAGON_PREFIX}/lib)
+#set(LIBDRAGON_SOURCES ${LIBDRAGON_PREFIX}/src)
+
 add_executable( ${ELF_NAME}
 #Add libs here:
-	#${LIBDRAGON_SOURCES}
-	#${FATFS_SOURCES}
+    #${LIBDRAGON_SOURCES}
+    #${FATFS_SOURCES}
 )
 
 target_compile_definitions( ${ELF_NAME} PUBLIC
-	ROM_VER_MAJOR=${BUILD_VER_MAJOR}
-	ROM_VER_MINOR=${BUILD_VER_MINOR}
-	ROM_VER_REV=${BUILD_VER_REV}
-	FLASHCART_TARGET_TYPE=${HARDWARE_TYPE}
-	FLASHCART_TARGET_REVISION=${HARDWARE_REVISION}
+    ROM_VER_MAJOR=${BUILD_VER_MAJOR}
+    ROM_VER_MINOR=${BUILD_VER_MINOR}
+    ROM_VER_REV=${BUILD_VER_REV}
+    FLASHCART_TARGET_TYPE=${HARDWARE_TYPE}
+    FLASHCART_TARGET_REVISION=${HARDWARE_REVISION}
 )
 
 target_sources( ${ELF_NAME}
 PUBLIC
-	${CMAKE_CURRENT_LIST_DIR}/src/main.c
+    ${CMAKE_CURRENT_LIST_DIR}/src/main.c
 )
 
 #probably a better way to do this, but if you need to build for something that uses different compiler flags...
 #SET_SOURCE_FILES_PROPERTIES(${CMAKE_CURRENT_LIST_DIR}/src/gscore.c PROPERTIES COMPILE_FLAGS -O0) 
 
 target_include_directories( ${ELF_NAME}
-	PUBLIC
-	${CMAKE_CURRENT_LIST_DIR}/inc
-	#Add extra includes from libs here:
-	#${LIBDRAGON_INCLUDE_DIRS}
-	#${FATFS_INCLUDE_DIRS}
+    PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/include
+    #Add extra includes from libs here:
+    ${LIBDRAGON_INCLUDE_DIRS}
+    #${FATFS_INCLUDE_DIRS}
 )
 
 target_link_directories( ${ELF_NAME}
-	PUBLIC
-	${CMAKE_CURRENT_LIST_DIR}/lib
+    PUBLIC
+    #${CMAKE_CURRENT_LIST_DIR}/lib
+    ${LIBDRAGON_LIB_DIRS}
+)
+
+target_link_libraries( ${ELF_NAME}
+    PUBLIC
+    dragon
 )
 
 set_target_properties( ${ELF_NAME} 
-	PROPERTIES LINK_FLAGS "-T ${LINKER_FILE_NAME}"
-	) 
+    PROPERTIES LINK_FLAGS "-T ${LINKER_FILE_NAME}"
+)
 
 add_custom_command(TARGET ${ELF_NAME}
-                  POST_BUILD
-                  COMMAND ${CMAKE_OBJCOPY} ARGS -O binary ${ELF_NAME} ${BIN_NAME}
-				  )
-					  
-				  #if the toolchain is different, we need to handle it here, or push it to a module, or even the toolchain?!
+    POST_BUILD
+    COMMAND ${CMAKE_OBJCOPY} ARGS -O binary ${ELF_NAME} ${BIN_NAME}
+)
+
+#if the toolchain is different, we need to handle it here, or push it to a module, or even the toolchain?!
 if(TOOLCHAIN_LIBDRAGON)
-
-add_custom_command(TARGET ${ELF_NAME}
-                  POST_BUILD #Make sure your ROM size is big enough... perhaps we could use "size" on the bin to check?
-                  COMMAND ${N64_TOOL} ARGS -l 1M -t "${PROJECT_NAME}" -h ${ROM_HEADER} -o ${ROM_NAME} ${BIN_NAME}
-				  )
-				  
-add_custom_command(TARGET ${ELF_NAME}
-                  POST_BUILD
-                  COMMAND ${CHECKSUM_TOOL} ARGS ${ROM_NAME}
-				  )
-				  
-				  elseif(TOOLCHAIN_N64CHAIN)
-
-				  add_custom_command(TARGET ${ELF_NAME}
-								  POST_BUILD
-								  COMMAND ${CHECKSUM_TOOL} ARGS ${ROM_HEADER}
-								  )
-			  
+    add_custom_command(TARGET ${ELF_NAME}
+        POST_BUILD #Make sure your ROM size is big enough... perhaps we could use "size" on the bin to check?
+        COMMAND ${N64_TOOL} ARGS -l 1M -t "${PROJECT_NAME}" -h ${ROM_HEADER} -o ${ROM_NAME} ${BIN_NAME}
+    )
+    add_custom_command(TARGET ${ELF_NAME}
+        POST_BUILD
+        COMMAND ${CHECKSUM_TOOL} ARGS ${ROM_NAME}
+    )
+elseif(TOOLCHAIN_N64CHAIN)
+    add_custom_command(TARGET ${ELF_NAME}
+        POST_BUILD
+        COMMAND ${CHECKSUM_TOOL} ARGS ${ROM_HEADER}
+    )
 else() #add some other compilation flags
 #show error?
 endif(TOOLCHAIN_LIBDRAGON)
