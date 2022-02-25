@@ -8,6 +8,10 @@
 #include "version.h"
 #include "flashcart.h"
 
+#include "libdragonwrapper.h"
+#include <string>
+#include <vector>
+
 /* hardware definitions */
 // Pad buttons
 #define A_BUTTON(a)     ((a) & 0x8000)
@@ -78,13 +82,13 @@ void unlockVideo(display_context_t dc)
 }
 
 /* text functions */
-void drawText(display_context_t dc, char *msg, int x, int y)
+void drawText(display_context_t dc, const char *msg, int x, int y)
 {
     if (dc)
         graphics_draw_text(dc, x, y, msg);
 }
 
-void printText(display_context_t dc, char *msg, int x, int y)
+void printText(display_context_t dc, const char *msg, int x, int y)
 {
     if (dc)
         graphics_draw_text(dc, x*8, y*8, msg);
@@ -121,66 +125,69 @@ int main(void)
 {
     display_context_t _dc;
     char temp[128];
-	int res = 0;
-	unsigned short buttons, previous = 0;
+    int res = 0;
+    unsigned short buttons, previous = 0;
 
     init_n64();
 
     while (1)
     {
-		int j;
-		int width[6] = { 320, 640, 256, 512, 512, 640 };
-		int height[6] = { 240, 480, 240, 480, 240, 240 };
-		unsigned int color;
+        int j;
+        int width[6] = { 320, 640, 256, 512, 512, 640 };
+        int height[6] = { 240, 480, 240, 480, 240, 240 };
+        unsigned int color;
 
         _dc = lockVideo(1);
-		color = graphics_make_color(0xCC, 0xCC, 0xCC, 0xFF);
-		graphics_fill_screen(_dc, color);
+        color = graphics_make_color(0xCC, 0xCC, 0xCC, 0xFF);
+        graphics_fill_screen(_dc, color);
 
-		color = graphics_make_color(0xFF, 0xFF, 0xFF, 0xFF);
-		graphics_draw_line(_dc, 0, 0, width[res]-1, 0, color);
-		graphics_draw_line(_dc, width[res]-1, 0, width[res]-1, height[res]-1, color);
-		graphics_draw_line(_dc, width[res]-1, height[res]-1, 0, height[res]-1, color);
-		graphics_draw_line(_dc, 0, height[res]-1, 0, 0, color);
+        color = graphics_make_color(0xFF, 0xFF, 0xFF, 0xFF);
+        graphics_draw_line(_dc, 0, 0, width[res]-1, 0, color);
+        graphics_draw_line(_dc, width[res]-1, 0, width[res]-1, height[res]-1, color);
+        graphics_draw_line(_dc, width[res]-1, height[res]-1, 0, height[res]-1, color);
+        graphics_draw_line(_dc, 0, height[res]-1, 0, 0, color);
 
-		graphics_draw_line(_dc, 0, 0, width[res]-1, height[res]-1, color);
-		graphics_draw_line(_dc, 0, height[res]-1, width[res]-1, 0, color);
+        graphics_draw_line(_dc, 0, 0, width[res]-1, height[res]-1, color);
+        graphics_draw_line(_dc, 0, height[res]-1, width[res]-1, 0, color);
 
-		color = graphics_make_color(0x00, 0x00, 0x00, 0xFF);
-		graphics_set_color(color, 0);
+        color = graphics_make_color(0x00, 0x00, 0x00, 0xFF);
+        graphics_set_color(color, 0);
 
         printText(_dc, "Video Resolution Test", width[res]/16 - 10, 3);
-		switch (res)
-		{
-			case 0:
-				printText(_dc, "320x240p", width[res]/16 - 3, 5);
-				break;
-			case 1:
-				printText(_dc, "640x480i", width[res]/16 - 3, 5);
-				break;
-			case 2:
-				printText(_dc, "256x240p", width[res]/16 - 3, 5);
-				break;
-			case 3:
-				printText(_dc, "512x480i", width[res]/16 - 3, 5);
-				break;
-			case 4:
-				printText(_dc, "512x240p", width[res]/16 - 3, 5);
-				break;
-			case 5:
-				printText(_dc, "640x240p", width[res]/16 - 3, 5);
-				break;
-		}
+        switch (res)
+        {
+            case 0:
+                printText(_dc, "320x240p", width[res]/16 - 3, 5);
+                break;
+            case 1:
+                printText(_dc, "640x480i", width[res]/16 - 3, 5);
+                break;
+            case 2:
+                printText(_dc, "256x240p", width[res]/16 - 3, 5);
+                break;
+            case 3:
+                printText(_dc, "512x480i", width[res]/16 - 3, 5);
+                break;
+            case 4:
+                printText(_dc, "512x240p", width[res]/16 - 3, 5);
+                break;
+            case 5:
+                printText(_dc, "640x240p", width[res]/16 - 3, 5);
+                break;
+        }
 
-		for (j=0; j<8; j++)
-		{
-			sprintf(temp, "Line %d", j);
-			printText(_dc, temp, 3, j);
-			sprintf(temp, "Line %d", height[res]/8 - j - 1);
-			printText(_dc, temp, 3, height[res]/8 - j - 1);
-		}
-		printText(_dc, "0123456789", 0, 16);
-		printText(_dc, "9876543210", width[res]/8 - 10, 16);
+        for (j=0; j<8; j++)
+        {
+            // std::string txt = "Line";
+            // printText(_dc, txt.c_str(), 3, j);
+
+            sprintf(temp, "Line %d", j);
+            printText(_dc, temp, 3, j);
+            sprintf(temp, "Line %d", height[res]/8 - j - 1);
+            printText(_dc, temp, 3, height[res]/8 - j - 1);
+        }
+        printText(_dc, "0123456789", 0, 16);
+        printText(_dc, "9876543210", width[res]/8 - 10, 16);
 
         unlockVideo(_dc);
 
@@ -197,21 +204,21 @@ int main(void)
         {
             // A changed
             if (!A_BUTTON(buttons))
-			{
-				resolution_t mode[6] = {
-					RESOLUTION_320x240,
-					RESOLUTION_640x480,
-					RESOLUTION_256x240,
-					RESOLUTION_512x480,
-					RESOLUTION_512x240,
-					RESOLUTION_640x240,
-				};
-				res++;
-				res %= 6;
-				display_close();
-				display_init(mode[res], DEPTH_16_BPP, 2, GAMMA_NONE, ANTIALIAS_RESAMPLE);
-			}
-		}
+            {
+                resolution_t mode[6] = {
+                    RESOLUTION_320x240,
+                    RESOLUTION_640x480,
+                    RESOLUTION_256x240,
+                    RESOLUTION_512x480,
+                    RESOLUTION_512x240,
+                    RESOLUTION_640x240,
+                };
+                res++;
+                res %= 6;
+                display_close();
+                display_init(mode[res], DEPTH_16_BPP, 2, GAMMA_NONE, ANTIALIAS_RESAMPLE);
+            }
+        }
 
         previous = buttons;
     }

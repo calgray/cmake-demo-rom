@@ -3,14 +3,17 @@ Generates a ROM built with CMake
 
 ## Arch Linux
 
-### mips64 (base)
-run `cmake -B build/mips64-elf --toolchain CMake/toolchain.mips64-elf.cmake -DTOOLCHAIN_PREFIX=/usr/mips64-elf -DLIBDRAGON_PREFIX=/usr/mips64-elf`
+### mips64
 
-### mips64-libdragon (preffered)
+Note: Base toolchain, this does not include any sdk
+
+run `cmake -B build/mips64-elf --toolchain CMake/toolchain.mips64-elf.cmake -DTOOLCHAIN_PREFIX=/usr/mips64-elf`
+
+### mips64-libdragon
 
 Note: libdragon uses a custom linker
 
-run `cmake -B build/mips64-libdragon --toolchain CMake/toolchain.libdragon.cmake -DTOOLCHAIN_PREFIX=/usr/mips64-elf -DLIBDRAGON_PREFIX=/usr/mips64-elf`
+run `cmake -B build/mips64-libdragon --toolchain CMake/toolchain.libdragon.cmake -DTOOLCHAIN_PREFIX=/usr/mips64-elf -DLIBDRAGON_PREFIX=/usr/bin`
 
 ### mips64-n64chain (exerimental)
 

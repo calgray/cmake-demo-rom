@@ -23,24 +23,22 @@ list(GET VERSION_LIST 2 BUILD_VER_REV)
 
 project(BUILD-DEMO #rename for your ROM name
         VERSION ${BUILD_VERSION}
-        LANGUAGES C ASM)
+        LANGUAGES C CXX ASM)
 
-
+# build ROM
 set( ELF_NAME             ${PROJECT_NAME}.elf )
 set( BIN_NAME             ${PROJECT_NAME}.bin )
 set( ROM_NAME             ${PROJECT_NAME}.v64 )
 
-set( LINKER_FILE_NAME "${LIBDRAGON_PREFIX}/lib/n64.ld" )
-set(ROM_HEADER ${LIBDRAGON_PREFIX}/lib/header)
+set(ROM_HEADER ${TOOLCHAIN_PREFIX}/lib/header)
 
 # find libdragon
-set(LIBDRAGON_INCLUDE_DIRS ${LIBDRAGON_PREFIX}/include)
-set(LIBDRAGON_LIB_DIRS ${LIBDRAGON_PREFIX}/lib)
+set(LIBDRAGON_INCLUDE_DIRS ${TOOLCHAIN_PREFIX}/include)
+set(LIBDRAGON_LIB_DIRS ${TOOLCHAIN_PREFIX}/lib)
 #set(LIBDRAGON_SOURCES ${LIBDRAGON_PREFIX}/src)
 
 add_executable( ${ELF_NAME}
 #Add libs here:
-    #${LIBDRAGON_SOURCES}
     #${FATFS_SOURCES}
 )
 
@@ -53,8 +51,8 @@ target_compile_definitions( ${ELF_NAME} PUBLIC
 )
 
 target_sources( ${ELF_NAME}
-PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}/src/main.c
+    PUBLIC
+    ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
 )
 
 #probably a better way to do this, but if you need to build for something that uses different compiler flags...
@@ -68,19 +66,17 @@ target_include_directories( ${ELF_NAME}
     #${FATFS_INCLUDE_DIRS}
 )
 
+
 target_link_directories( ${ELF_NAME}
     PUBLIC
     #${CMAKE_CURRENT_LIST_DIR}/lib
     ${LIBDRAGON_LIB_DIRS}
 )
 
-target_link_libraries( ${ELF_NAME}
-    PUBLIC
-    dragon
-)
-
+set( LINKER_FILE_NAME "${TOOLCHAIN_PREFIX}/lib/n64.ld" )
 set_target_properties( ${ELF_NAME} 
-    PROPERTIES LINK_FLAGS "-T ${LINKER_FILE_NAME}"
+    PROPERTIES
+    LINK_FLAGS "-T ${LINKER_FILE_NAME}"
 )
 
 add_custom_command(TARGET ${ELF_NAME}

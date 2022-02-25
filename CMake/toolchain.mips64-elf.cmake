@@ -10,9 +10,9 @@ set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR mips64)
 
 # set the language standard (gnu-99)
-set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
-set(CMAKE_CXX_STANDARD 99)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 # macro to setup compilers
@@ -37,8 +37,8 @@ if(NOT CMAKE_ASM_COMPILER)
 endif()
 
 include_directories(
-	${TOOLCHAIN_PREFIX}/mips64-elf/include
 	${TOOLCHAIN_PREFIX}/include
+	${TOOLCHAIN_PREFIX}/mips64-elf/include
 )
 
 link_directories(
