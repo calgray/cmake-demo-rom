@@ -1,0 +1,6 @@
+[submodule "external/libreultra"]
+	path = external/libreultra
+	url = https://github.com/N64-tools/libreultra.git
+[submodule "external/libdragon"]
+	path = external/libdragon
+	url = https://github.com/N64-tools/libdragon.git
