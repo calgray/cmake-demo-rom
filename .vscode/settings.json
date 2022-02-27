@@ -10,7 +10,11 @@
     "cmake.cmakePath": "C:/Program Files/CMake/bin/cmake.exe",
     "cmake.configureOnOpen": false,
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.browse.path": [
+        "${workspaceFolder}/external/libreultra/include/2.0I",
+    ],
     "files.associations": {
-        "string": "cpp"
+        "string": "cpp",
+        "sched.h": "c"
     }
 }

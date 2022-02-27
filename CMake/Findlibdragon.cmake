@@ -1,0 +1,12 @@
+
+#set(TARGET_NAME libdragon::libdragon)
+set(TARGET_NAME libdragon)
+add_library(${TARGET_NAME} STATIC IMPORTED)
+
+set(LINKER_FILE_NAME "${TOOLCHAIN_PREFIX}/lib/n64.ld")
+set_target_properties(${TARGET_NAME}
+    PROPERTIES
+    IMPORTED_LOCATION ${TOOLCHAIN_PREFIX}/lib/libdragon.a
+    INTERFACE_INCLUDE_DIRECTORIES ${TOOLCHAIN_PREFIX}/include
+    INTERFACE_LINK_OPTIONS "-T${LINKER_FILE_NAME}"
+)

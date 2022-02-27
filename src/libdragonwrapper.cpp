@@ -1,6 +1,5 @@
 
-#pragma once
-#include "libdragonwrapper.h"
+#include "libdragonwrapper.hpp"
 
 namespace libdragon::graphics
 {
@@ -105,4 +104,9 @@ namespace libdragon::graphics
             dc = display_lock();
         return display_context(dc);
     }
+}
+
+namespace libdragon::controller
+{
+
 }

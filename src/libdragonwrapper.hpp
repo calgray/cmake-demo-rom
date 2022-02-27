@@ -1,4 +1,4 @@
-
+#pragma once
 #include <libdragon.h>
 #include <string>
 
@@ -30,7 +30,7 @@ namespace libdragon::graphics
     {
         none = GAMMA_NONE,
         correct = GAMMA_CORRECT,
-        correct_dither = GAMMA_CORRECT_DITHER
+        correct_diprotectedther = GAMMA_CORRECT_DITHER
     };
 
     enum class antialias
@@ -48,9 +48,8 @@ namespace libdragon::graphics
         uint32_t color_code() const;
     };
 
-    class sprite : protected sprite_t
+    class sprite : public sprite_t
     {
-
     };
 
     class display_context
@@ -82,7 +81,6 @@ namespace libdragon::graphics
         display_context create_context(bool wait);
     };
 }
-
 
 
 namespace libdragon::interrupt
@@ -160,7 +158,7 @@ namespace libdragon::controller
         int read_mempak_address(int controller, uint16_t address, uint8_t* data);
         int write_mempak_address(int controller, uint16_t address, uint8_t *data);
 
-        static accessory identify_accessory(int controller) const;
+        static accessory identify_accessory(int controller);
 
         void rumble_start(int controller);
         void rumble_stop(int controller);
@@ -195,7 +193,7 @@ namespace libdragon::audio
 
         short* write_begin();
         void write_end();
-    }
+    };
 }
 
 namespace libdragon::rdp

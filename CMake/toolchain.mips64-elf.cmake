@@ -36,15 +36,15 @@ if(NOT CMAKE_ASM_COMPILER)
     SET_COMPILER_VAR(ASM-ATT_COMPILER as)
 endif()
 
-include_directories(
-	${TOOLCHAIN_PREFIX}/include
-	${TOOLCHAIN_PREFIX}/mips64-elf/include
-)
+# include_directories(
+# 	${TOOLCHAIN_PREFIX}/include
+# 	${TOOLCHAIN_PREFIX}/mips64-elf/include
+# )
 
-link_directories(
-	${TOOLCHAIN_PREFIX}/lib
-	${TOOLCHAIN_PREFIX}/mips64-elf/lib
-)
+# link_directories(
+# 	${TOOLCHAIN_PREFIX}/lib
+# 	${TOOLCHAIN_PREFIX}/mips64-elf/lib
+# )
 
 link_libraries(
 	libc.a

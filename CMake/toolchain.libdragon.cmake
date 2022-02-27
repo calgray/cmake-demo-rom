@@ -3,9 +3,9 @@ option(TOOLCHAIN_LIBDRAGON "Use LIBDRAGON" ON) #only set if this file is called~
 # Arch Linux
 set(LIBDRAGONTOOLS_PREFIX ${LIBDRAGON_PREFIX})
 
-include_directories(
-	${LIBDRAGON_PREFIX}/include
-)
+# include_directories(
+# 	${LIBDRAGON_PREFIX}/include
+# )
 
 link_directories(
 	${LIBDRAGON_PREFIX}/lib/
