@@ -1,6 +1,8 @@
 # cmake-demo-rom
 Generates a ROM built with CMake
 
+Read the following manual to better understand the hardware architecture: http://ultra64.ca/files/documentation/nintendo/Nintendo_64_Intro_to_the_N64.pdf
+
 ## Arch Linux
 
 ### mips64

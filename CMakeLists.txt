@@ -53,6 +53,7 @@ target_compile_definitions( ${ELF_NAME} PUBLIC
 target_sources( ${ELF_NAME}
     PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}/src/main.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/libdragonwrapper.cpp
 )
 
 #probably a better way to do this, but if you need to build for something that uses different compiler flags...
