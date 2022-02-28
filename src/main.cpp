@@ -1,6 +1,4 @@
 
-#include <ultra64.h>
-
 #include <stdio.h>
 #include <malloc.h>
 #include <string.h>

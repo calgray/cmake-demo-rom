@@ -73,6 +73,12 @@ Note: libdragon uses a custom linker
 
 run `cmake -B build/mips64-libdragon --toolchain CMake/toolchain.libdragon.cmake -DTOOLCHAIN_PREFIX=/usr/mips64-elf -DLIBDRAGON_PREFIX=/usr/bin`
 
+### mips64-n64sdkmod
+
+Uses official libraries and unofficial tools from n64sdkmod
+
+run `cmake -B build/mips64-libdragon --toolchain CMake/toolchain.n64sdkmod.cmake -DTOOLCHAIN_PREFIX=/usr/mips64-elf`
+
 ### mips64-n64chain (experimental)
 
 Uses n64toolchain with

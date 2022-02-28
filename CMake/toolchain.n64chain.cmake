@@ -18,8 +18,4 @@ link_directories(
 set(CHECKSUM_TOOL       ${N64CHAIN_PREFIX}/tools/bin/checksum)
 set(RSPASM_TOOL       ${N64CHAIN_PREFIX}/tools/bin/rspasm)
 
-# set(LINKER_FLAGS_START		"-ldragon")
-# set(LINKER_FLAGS_END		"-ldragonsys")
-
-
 include(${CMAKE_CURRENT_LIST_DIR}/toolchain.mips64-elf.cmake)

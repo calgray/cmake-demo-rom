@@ -1,5 +1,4 @@
 
-#set(TARGET_NAME libdragon::libdragon)
 set(TARGET_NAME libdragon)
 add_library(${TARGET_NAME} STATIC IMPORTED)
 

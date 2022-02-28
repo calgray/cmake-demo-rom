@@ -1,11 +1,16 @@
-option(TOOLCHAIN_LIBDRAGON "Use LIBDRAGON" ON) #only set if this file is called~?
+option(TOOLCHAIN_LIBDRAGON "Use LIBDRAGON" ON) #only set if this file is called
+
+# variables
+# TOOLCHAIN_PREFIX - directory containing target gcc compiler and binutils
+# LIBDRAGON_PREFIX - directory containing libdragon
+# LIBDRAGONTOOLS_PREFIX - directory containing libdragon tools
 
 # Arch Linux
 set(LIBDRAGONTOOLS_PREFIX ${LIBDRAGON_PREFIX})
 
-# include_directories(
-# 	${LIBDRAGON_PREFIX}/include
-# )
+include_directories(
+	${LIBDRAGON_PREFIX}/include
+)
 
 link_directories(
 	${LIBDRAGON_PREFIX}/lib/
@@ -21,7 +26,5 @@ set(CHECKSUM_TOOL       ${LIBDRAGONTOOLS_PREFIX}/chksum64)
 
 set(LINKER_FLAGS_START		"-ldragon")
 set(LINKER_FLAGS_END		"-ldragonsys")
-
-#set(CMAKE_CXX_LINK_EXECUTABLE "${TOOLCHAIN_PREFIX}/lib/n64.ld")
 
 include(${CMAKE_CURRENT_LIST_DIR}/toolchain.mips64-elf.cmake)
