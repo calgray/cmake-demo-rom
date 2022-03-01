@@ -4,7 +4,10 @@ include(CMakeForceCompiler)
 set(TOOLCHAIN_BIN_DIR ${TOOLCHAIN_PREFIX}/bin)
 
 # the name of the operating system for which CMake is to build
-set(CMAKE_SYSTEM_NAME Generic)
+#set(CMAKE_SYSTEM_NAME Posix)
+set(CMAKE_ASM_OUTPUT_EXTENSION ".o")
+set(CMAKE_C_OUTPUT_EXTENSION ".o")
+set(CMAKE_CXX_OUTPUT_EXTENSION ".o")
 
 # name of the CPU CMake is building for
 set(CMAKE_SYSTEM_PROCESSOR mips64)
@@ -19,6 +22,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 macro(SET_COMPILER_VAR var name)
    find_program(CMAKE_${var} mips64-elf-${name} HINTS ${TOOLCHAIN_BIN_DIR} DOC "${name} tool")
 endmacro()
+
+# setup C preprocessor
+if(NOT CMAKE_C_PREPROCESSOR)
+    SET_COMPILER_VAR(C_PREPROCESSOR cpp)
+endif()
 
 # setup C compiler
 if(NOT CMAKE_C_COMPILER)

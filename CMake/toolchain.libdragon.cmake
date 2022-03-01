@@ -13,7 +13,7 @@ include_directories(
 )
 
 link_directories(
-	${LIBDRAGON_PREFIX}/lib/
+	${LIBDRAGON_PREFIX}/lib
 )
 
 link_libraries(

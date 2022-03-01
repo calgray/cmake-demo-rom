@@ -57,7 +57,7 @@ Custom gcc based os/library for homebrew with a simplified API. Provides librari
 
 Custom set of tools and c library resembling the ultra64 sdk.
 
-## Arch Linux
+## Toolchains
 
 ### mips64
 
@@ -77,7 +77,7 @@ run `cmake -B build/mips64-libdragon --toolchain CMake/toolchain.libdragon.cmake
 
 Uses official libraries and unofficial tools from n64sdkmod
 
-run `cmake -B build/mips64-libdragon --toolchain CMake/toolchain.n64sdkmod.cmake -DTOOLCHAIN_PREFIX=/usr/mips64-elf`
+run `cmake -B build/mips64-n64sdkmod --toolchain CMake/toolchain.n64sdkmod.cmake -DTOOLCHAIN_PREFIX=/usr/mips64-elf -DN64SDKMOD_PREFIX=external/n64sdkmod -DCMAKE_ASM_OUTPUT_EXTENSION=".o" -DCMAKE_C_OUTPUT_EXTENSION=".o"`
 
 ### mips64-n64chain (experimental)
 
