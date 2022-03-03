@@ -5,9 +5,9 @@ set(TOOLCHAIN_BIN_DIR ${TOOLCHAIN_PREFIX}/bin)
 
 # the name of the operating system for which CMake is to build
 #set(CMAKE_SYSTEM_NAME Posix)
-set(CMAKE_ASM_OUTPUT_EXTENSION ".o")
-set(CMAKE_C_OUTPUT_EXTENSION ".o")
-set(CMAKE_CXX_OUTPUT_EXTENSION ".o")
+# set(CMAKE_ASM_OUTPUT_EXTENSION ".o")
+# set(CMAKE_C_OUTPUT_EXTENSION ".o")
+# set(CMAKE_CXX_OUTPUT_EXTENSION ".o")
 
 # name of the CPU CMake is building for
 set(CMAKE_SYSTEM_PROCESSOR mips64)

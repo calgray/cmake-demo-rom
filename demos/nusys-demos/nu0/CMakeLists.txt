@@ -26,12 +26,16 @@ target_include_directories(${ELF_NAME}
 # build linker script with gcc preprocessor
 set(LD_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/nu0.ld)
 
+
 # TODO: newer cpp versions output typedefs which are not supported in linker scripts
 # TODO: use #${CMAKE_CXX_FLAGS}
+
+set(MOD_FLAGS -D_FINALROM=1 -DNDEBUG=1 -DF3DEX_GBI_2=1 -DBUILD_DIR=${CMAKE_CURRENT_BINARY_DIR} -MMD -MP)
+set(MOD_INCLUDES -I${libultra_DIR}/include/n64 -I${libultra_DIR}/include/n64/PR -I${libultra_DIR}/include/n64/nusys -Iinclude -I${CMAKE_CURRENT_BINARY_DIR} -I${CMAKE_CURRENT_BINARY_DIR}/include -Isrc -I.)
 set(CMAKE_C_PREPROCESSOR cpp-8)
 add_custom_command(OUTPUT ${LD_SCRIPT}
     ##COMMAND ${CMAKE_CXX_COMPILER} -march=vr4300 -mtune=vr4300 -MMD -MP -MT -MF -o nu0.ld ${CMAKE_CURRENT_LIST_DIR}/nu0.ld
-    COMMAND ${CMAKE_C_PREPROCESSOR} -P -Wno-trigraphs -I${libultra_DIR}/include/n64 -I${libultra_DIR}/include/n64/PR -I${libultra_DIR}/include/n64/nusys -Iinclude -I${CMAKE_CURRENT_BINARY_DIR} -I${CMAKE_CURRENT_BINARY_DIR}/include -Isrc -I. -D_FINALROM=1 -DNDEBUG=1 -DF3DEX_GBI_2=1 -DBUILD_DIR=${CMAKE_CURRENT_BINARY_DIR} -MMD -MP -MT ${CMAKE_CURRENT_BINARY_DIR}/nu0.ld -MF ${CMAKE_CURRENT_BINARY_DIR}/nu0.ld.d -o ${CMAKE_CURRENT_BINARY_DIR}/nu0.ld ${CMAKE_CURRENT_LIST_DIR}/nu0.ld
+    COMMAND ${CMAKE_C_PREPROCESSOR} -P -Wno-trigraphs ${MOD_INCLUDES} ${MOD_FLAGS} -MT ${CMAKE_CURRENT_BINARY_DIR}/nu0.ld -MF ${CMAKE_CURRENT_BINARY_DIR}/nu0.ld.d -o ${CMAKE_CURRENT_BINARY_DIR}/nu0.ld ${CMAKE_CURRENT_LIST_DIR}/nu0.ld
     COMMENT "Generating linker script nu0.ld"
 )
 add_custom_target(ldscript DEPENDS ${LD_SCRIPT})
