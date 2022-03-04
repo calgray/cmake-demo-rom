@@ -83,13 +83,6 @@ add_custom_command(TARGET ${ELF_NAME}
 )
 target_link_options(${ELF_NAME} PUBLIC "-T${LD_SCRIPT}")
 
-add_custom_command(OUTPUT ${ROM_NAME}
-    # pad (for bootcode?)
-    COMMAND ${CMAKE_OBJCOPY} --pad-to=0x100000 --gap-fill=0xFF ${ELF_NAME} ${ROM_NAME} -O binary
-)
-add_custom_target(${ROM_NAME} ALL DEPENDS ${ROM_NAME})
-add_dependencies(${ROM_NAME} ${ELF_NAME})
-
 # target_link_options(${ELF_NAME}
 #     PUBLIC
 #     -Map nu0.map
@@ -105,6 +98,22 @@ add_dependencies(${ROM_NAME} ${ELF_NAME})
 #     /usr/lib/gcc/mips64-elf/11.2.0/32
 #     /usr/lib/gcc/mips64-elf/11.2.0
 # )
+# target_link_libraries(${ELF_NAME}
+#     ultra_rom
+#     gcc
+# )
+# CMAKE style
+# target_link_libraries(${ELF_NAME}
+#     PRIVATE n64sdkmod::ultra
+#     PRIVATE n64sdkmod::nusys
+#     PRIVATE n64sdkmod::nualsgi
+#     PRIVATE n64sdkmod::nualstl
+#     ultra_rom
+# )
+
+#set_target_properties(${ELF_NAME} PROPERTIES LINK_DEPENDS ldscript)
+#set_target_properties(${ELF_NAME} PROPERTIES LINK_DEPENDS boot)
+
 
 set(CUSTOM_LINK_FLAGS
 "-L build -T ${BUILD_DIR}/nu0.ld -Map ${BUILD_DIR}/nu0.map --no-check-sections -o ${BUILD_DIR}/nu0.elf"
@@ -119,29 +128,22 @@ set(CUSTOM_LINK_FLAGS
 " -L/home/callan/Code/n64/cmake-demo-rom/external/n64sdkmod/lib/n64/nusys -lnusys"
 " -L/home/callan/Code/n64/cmake-demo-rom/external/n64sdkmod/lib/n64 -lultra_rom -lultra"
 " -L/usr/lib/gcc/mips64-elf/11.2.0/32 -lgcc"
+" -o ${CMAKE_CURRENT_BINARY_DIR}/${ELF_NAME}"
 )
 string(CONCAT CUSTOM_LINK_FLAGS ${CUSTOM_LINK_FLAGS})
 # NOTE: link directories must come before link libraries
 set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_LINKER} ${CUSTOM_LINK_FLAGS}")
 
+add_custom_command(TARGET ${ELF_NAME}
+    POST_BUILD
+    # pad (for bootcode?)
+    COMMAND ${CMAKE_OBJCOPY} --pad-to=0x100000 --gap-fill=0xFF $<TARGET_FILE:${ELF_NAME}> ${ROM_NAME} -O binary
+    COMMAND makemask ${ROM_NAME}
+    BYPRODUCTS ${ROM_NAME}
+    COMMENT "Generating ${ROM_NAME}"
+)
+
 # Common Failures
 # undefined reference to `NU_SPEC_BOOT_STACK`
 # - missing "-x assembler-with-cpp" on assembling asm objects
 
-# target_link_libraries(${ELF_NAME}
-#     ultra_rom
-#     gcc
-# )
-
-
-# CMAKE style
-# target_link_libraries(${ELF_NAME}
-#     PRIVATE n64sdkmod::ultra
-#     PRIVATE n64sdkmod::nusys
-#     PRIVATE n64sdkmod::nualsgi
-#     PRIVATE n64sdkmod::nualstl
-#     ultra_rom
-# )
-
-#set_target_properties(${ELF_NAME} PROPERTIES LINK_DEPENDS ldscript)
-#set_target_properties(${ELF_NAME} PROPERTIES LINK_DEPENDS boot)
