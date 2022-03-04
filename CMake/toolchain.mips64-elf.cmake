@@ -4,10 +4,9 @@ include(CMakeForceCompiler)
 set(TOOLCHAIN_BIN_DIR ${TOOLCHAIN_PREFIX}/bin)
 
 # the name of the operating system for which CMake is to build
-#set(CMAKE_SYSTEM_NAME Posix)
-# set(CMAKE_ASM_OUTPUT_EXTENSION ".o")
-# set(CMAKE_C_OUTPUT_EXTENSION ".o")
-# set(CMAKE_CXX_OUTPUT_EXTENSION ".o")
+
+# WARNING: setting this seems to default to windows .obj output extensions
+# set(CMAKE_SYSTEM_NAME nintendo64)
 
 # name of the CPU CMake is building for
 set(CMAKE_SYSTEM_PROCESSOR mips64)
@@ -54,10 +53,10 @@ endif()
 # 	${TOOLCHAIN_PREFIX}/mips64-elf/lib
 # )
 
-link_libraries(
-	libc.a
-	libm.a
-)
+# link_libraries(
+# 	libc.a
+# 	libm.a
+# )
 
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
@@ -68,7 +67,7 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 # set the flags for an N64's architecture
-set(MCPU_FLAGS "-march=vr4300 -mtune=vr4300")
+set(MCPU_FLAGS "-march=vr4300 -mtune=vr4300 -mabi=32 -ffreestanding -mfix4300")
 
 set(CMAKE_C_CXX_FLAGS "${MCPU_FLAGS} -mno-long-calls -Wall -Wno-pointer-sign")
 set(CMAKE_C_CXX_FLAGS_DEBUG   "-O0 -g -ggdb3")
@@ -86,4 +85,5 @@ set(CMAKE_ASM_FLAGS "${MCPU_FLAGS}" CACHE INTERNAL "asm compiler flags")
 set(CMAKE_ASM_FLAGS_DEBUG   "" )
 set(CMAKE_ASM_FLAGS_RELEASE "" )
 
-set(CMAKE_EXE_LINKER_FLAGS "-G0 ${LINKER_FLAGS_START} -lc -lm ${LINKER_FLAGS_END}" CACHE INTERNAL "exe link flags")
+#set(CMAKE_EXE_LINKER_FLAGS "-G0 ${LINKER_FLAGS_START} -lc -lm ${LINKER_FLAGS_END}" CACHE INTERNAL "exe link flags")
+set(CMAKE_EXE_LINKER_FLAGS "-G0 ${LINKER_FLAGS_START} ${LINKER_FLAGS_END}" CACHE INTERNAL "exe link flags")

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 include(CMakeToolsHelpers OPTIONAL)
 include(ExternalProject)
 
-set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" FORCE) # debug helper
+# set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" FORCE) # debug helper
 
 # the following prevents launching a build in the source tree
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
@@ -24,11 +24,12 @@ list(GET VERSION_LIST 2 BUILD_VER_REV)
 project(BUILD-DEMO #rename for your ROM name
         VERSION ${BUILD_VERSION}
         LANGUAGES C CXX ASM)
+# set(CMAKE_ASM_OUTPUT_EXTENSION ".o")
+# set(CMAKE_C_OUTPUT_EXTENSION ".o")
+# set(CMAKE_CXX_OUTPUT_EXTENSION ".o")
 
 set(ROM_HEADER ${TOOLCHAIN_PREFIX}/lib/header)
-
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMake)
-message(${CMAKE_PROJECT_DIR}/CMake)
 
 #if the toolchain is different, we need to handle it here, or push it to a module, or even the toolchain?!
 if(TOOLCHAIN_LIBDRAGON)
@@ -61,5 +62,7 @@ elseif(TOOLCHAIN_N64CHAIN)
     )
 else() #add some other compilation flags
 #show error?
-endif(TOOLCHAIN_LIBDRAGON)
+endif()
+
+unset(TOOLCHAIN_N64SDKMOD CACHE)
 unset(TOOLCHAIN_LIBDRAGON CACHE) # <---- this is the important to make sure the next build succeeds!!
