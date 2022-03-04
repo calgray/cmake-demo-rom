@@ -15,7 +15,6 @@ message("N64SDK_DIR ${N64SDK_DIR}")
 set(CMAKE_C_PREPROCESSOR cpp-8)
 
 add_executable(${ELF_NAME}
-    #$<TARGET_OBJECTS:${TARGET_NAME}>
     asm/entry.s
     asm/rom_header.s
     src/main/gfxinit.c
@@ -23,12 +22,23 @@ add_executable(${ELF_NAME}
     src/main/main.c
     src/main/stage00.c
 )
+target_include_directories(${ELF_NAME} PRIVATE .)
 target_include_directories(${ELF_NAME}
-    PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}
-    ${CMAKE_CURRENT_LIST_DIR}/include
+    PUBLIC
+    include
+    ${N64SDK_DIR}/include/n64
+    ${N64SDK_DIR}/include/n64/PR
+    ${N64SDK_DIR}/include/n64/nusys
 )
-# target_compile_options(${ELF_NAME})
+target_compile_definitions(${ELF_NAME} PUBLIC _FINALROM=1)
+target_compile_definitions(${ELF_NAME} PUBLIC NDEBUG=1)
+target_compile_definitions(${ELF_NAME} PUBLIC F3DEX_GBI_2=1)
+target_compile_options(${ELF_NAME} PUBLIC "$<$<CONFIG:RELEASE>:${C_RELEASE_OPTIONS}>")
+
+# RELEASE
+set(CMAKE_C_FLAGS "-G 0 -O2 -g -march=vr4300 -mtune=vr4300 -mabi=32 -ffreestanding -mfix4300")
+set(CMAKE_ASM_FLAGS "-G 0 -O2 -g -march=vr4300 -mtune=vr4300 -mabi=32 -ffreestanding -mfix4300 -x assembler-with-cpp -MMD")
+#-MF build/asm/entry.d
 
 # build boot object
 add_custom_command(TARGET ${ELF_NAME}
@@ -38,7 +48,6 @@ add_custom_command(TARGET ${ELF_NAME}
     MAIN_DEPENDENCY ${BOOT_SRC}
     BYPRODUCTS ${BUILD_DIR}/${BOOT_OBJ}
 )
-#add_custom_target(boot DEPENDS ${BOOT_OBJ})
 
 
 # build linker script with gcc preprocessor
@@ -63,40 +72,61 @@ set(MOD_INCLUDES
 
 add_custom_command(TARGET ${ELF_NAME}
     PRE_LINK
-    COMMAND ${CMAKE_C_PREPROCESSOR} -P -Wno-trigraphs ${MOD_INCLUDES} ${MOD_FLAGS} -MT ${CMAKE_CURRENT_BINARY_DIR}/nu0.ld -MF ${CMAKE_CURRENT_BINARY_DIR}/nu0.ld.d -o ${CMAKE_CURRENT_BINARY_DIR}/nu0.ld ${CMAKE_CURRENT_LIST_DIR}/nu0.ld
+    COMMAND ${CMAKE_C_PREPROCESSOR} -P -Wno-trigraphs ${MOD_INCLUDES} ${MOD_FLAGS}
+        -MT ${BUILD_DIR}/nu0.ld
+        -MF ${BUILD_DIR}/nu0.ld.d
+        -o ${BUILD_DIR}/nu0.ld
+        ${CMAKE_CURRENT_LIST_DIR}/nu0.ld
     COMMENT "Generating linker script nu0.ld"
     MAIN_DEPENDENCY ${CMAKE_CURRENT_LIST_DIR}/nu0.ld
+    BYPRODUCTS ${BUILD_DIR}/nu0.ld ${BUILD_DIR}/nu0.ld.d
 )
-# add_custom_target(ldscript DEPENDS ${LD_SCRIPT})
-# add_dependencies(${ELF_NAME} ldscript)
 target_link_options(${ELF_NAME} PUBLIC "-T${LD_SCRIPT}")
 
+add_custom_command(OUTPUT ${ROM_NAME}
+    # pad (for bootcode?)
+    COMMAND ${CMAKE_OBJCOPY} --pad-to=0x100000 --gap-fill=0xFF ${ELF_NAME} ${ROM_NAME} -O binary
+)
+add_custom_target(${ROM_NAME} ALL DEPENDS ${ROM_NAME})
+add_dependencies(${ROM_NAME} ${ELF_NAME})
 
-target_include_directories(${ELF_NAME}
-    PUBLIC
-    ${N64SDK_DIR}/include/n64
-    ${N64SDK_DIR}/include/n64/PR
-    ${N64SDK_DIR}/include/n64/nusys
+# target_link_options(${ELF_NAME}
+#     PUBLIC
+#     -Map nu0.map
+#     --no-check-sections
+#     /home/callan/Code/n64/cmake-demo-rom/external/n64sdkmod/lib/n64/nusys/nusys_rom.o
+# )
+# target_link_directories(${ELF_NAME}
+#     PUBLIC
+#     .
+#     ${BUILD_DIR}
+#     ${N64SDK_DIR}
+#     ${N64SDK_DIR}/lib/n64/nusys
+#     /usr/lib/gcc/mips64-elf/11.2.0/32
+#     /usr/lib/gcc/mips64-elf/11.2.0
+# )
+
+set(CUSTOM_LINK_FLAGS
+"-L build -T ${BUILD_DIR}/nu0.ld -Map ${BUILD_DIR}/nu0.map --no-check-sections -o ${BUILD_DIR}/nu0.elf"
+" /home/callan/Code/n64/cmake-demo-rom/external/n64sdkmod/lib/n64/nusys/nusys_rom.o"
+" ${BUILD_DIR}/src/main/gfxinit.o"
+" ${BUILD_DIR}/src/main/graphic.o"
+" ${BUILD_DIR}/src/main/main.o"
+" ${BUILD_DIR}/src/main/stage00.o"
+" ${BUILD_DIR}/asm/entry.o"
+" ${BUILD_DIR}/asm/rom_header.o"
+" ${BUILD_DIR}/boot.6102.o"
+" -L/home/callan/Code/n64/cmake-demo-rom/external/n64sdkmod/lib/n64/nusys -lnusys"
+" -L/home/callan/Code/n64/cmake-demo-rom/external/n64sdkmod/lib/n64 -lultra_rom -lultra"
+" -L/usr/lib/gcc/mips64-elf/11.2.0/32 -lgcc"
 )
-target_link_options(${ELF_NAME}
-    PUBLIC
-    -Map nu0.map
-    --no-check-sections
-    /home/callan/Code/n64/cmake-demo-rom/external/n64sdkmod/lib/n64/nusys/nusys_rom.o
-)
-target_link_directories(${ELF_NAME}
-    PUBLIC
-    .
-    ${BUILD_DIR}
-    ${N64SDK_DIR}
-    ${N64SDK_DIR}/lib/n64/nusys
-    /usr/lib/gcc/mips64-elf/11.2.0/32
-    /usr/lib/gcc/mips64-elf/11.2.0
-)
+string(CONCAT CUSTOM_LINK_FLAGS ${CUSTOM_LINK_FLAGS})
 # NOTE: link directories must come before link libraries
-set(MIP_LIBRARIES "-lnusys -lultra_rom -lgcc")
-set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_LINKER} <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES> ${MIP_LIBRARIES}")
-set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_LINKER} <FLAGS> <CMAKE_CXX_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
+set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_LINKER} ${CUSTOM_LINK_FLAGS}")
+
+# Common Failures
+# undefined reference to `NU_SPEC_BOOT_STACK`
+# - missing "-x assembler-with-cpp" on assembling asm objects
 
 # target_link_libraries(${ELF_NAME}
 #     ultra_rom
