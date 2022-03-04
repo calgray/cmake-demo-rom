@@ -1,4 +1,6 @@
 
+set(N64SDK_DIR ${CMAKE_SOURCE_DIR}/external/n64sdkmod)
+
 add_library(n64sdkmod::ultra STATIC IMPORTED)
 set(libultra_DIR ${CMAKE_SOURCE_DIR}/external/n64sdkmod)
 set_target_properties(n64sdkmod::ultra
@@ -6,7 +8,7 @@ set_target_properties(n64sdkmod::ultra
     IMPORTED_LOCATION ${libultra_DIR}/lib/n64/libultra.a
     INTERFACE_INCLUDE_DIRECTORIES ${libultra_DIR}/include/n64
 )
-set(BOOT ${libultra_DIR}/lib/n64/bootcode/boot.6102)
+set(BOOT_SRC ${libultra_DIR}/lib/n64/PR/bootcode/boot.6102)
 set(BOOT_OBJ boot.6102.o)
 
 add_library(n64sdkmod::nusys STATIC IMPORTED)

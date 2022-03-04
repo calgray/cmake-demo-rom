@@ -1,20 +1,2 @@
 {
-    "cmake.preferredGenerators": [
-        "Ninja"
-    ],
-    "cmake.generator": "Ninja",
-    "cmake.autoRestartBuild" : true,
-    "cmake.configureSettings": {
-        "CMAKE_MAKE_PROGRAM": "${workspaceFolder}/tools/ninja.exe"
-    },
-    "cmake.cmakePath": "C:/Program Files/CMake/bin/cmake.exe",
-    "cmake.configureOnOpen": false,
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-    "C_Cpp.default.browse.path": [
-        "${workspaceFolder}/external/libreultra/include/2.0I",
-    ],
-    "files.associations": {
-        "string": "cpp",
-        "sched.h": "c"
-    }
 }
