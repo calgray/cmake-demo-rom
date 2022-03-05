@@ -77,7 +77,7 @@ run `cmake -B build/mips64-libdragon --toolchain CMake/toolchain.libdragon.cmake
 
 Uses official libraries and unofficial tools from n64sdkmod
 
-run `cmake -B build/mips64-n64sdkmod --toolchain CMake/toolchain.n64sdkmod.cmake -DTOOLCHAIN_PREFIX=/usr/mips64-elf -DN64SDKMOD_PREFIX=external/n64sdkmod -DCMAKE_C_OUTPUT_EXTENSION_REPLACE=1 -DCMAKE_ASM_OUTPUT_EXTENSION_REPLACE=1`
+run `cmake -B build/mips64-n64sdkmod --toolchain CMake/toolchain.n64sdkmod.cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DTOOLCHAIN_PREFIX=/usr/mips64-elf -DN64SDKMOD_PREFIX=external/n64sdkmod -DCMAKE_C_OUTPUT_EXTENSION_REPLACE=1 -DCMAKE_ASM_OUTPUT_EXTENSION_REPLACE=1`
 
 ### mips64-n64chain (experimental)
 

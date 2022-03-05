@@ -24,6 +24,7 @@ add_executable(${ELF_NAME}
     src/main/main.c
     src/main/stage00.c
 )
+target_link_libraries(${ELF_NAME} n64)
 target_include_directories(${ELF_NAME} PRIVATE .)
 target_include_directories(${ELF_NAME} PUBLIC
     include
@@ -34,13 +35,6 @@ target_include_directories(${ELF_NAME} PUBLIC
 target_compile_definitions(${ELF_NAME} PUBLIC _FINALROM=1)
 target_compile_definitions(${ELF_NAME} PUBLIC NDEBUG=1)
 target_compile_definitions(${ELF_NAME} PUBLIC F3DEX_GBI_2=1)
-# target_compile_options(${ELF_NAME} PUBLIC
-#     -march=vr4300
-#     -mtune=vr4300
-#     -mabi=32
-#     -mfix4300
-#     -ffreestanding
-# )
 
 # build boot object
 add_custom_command(TARGET ${ELF_NAME}
@@ -111,14 +105,15 @@ if(MODERN)
     #<CMAKE_C_COMPILER>     := ${CMAKE_C_COMPILER}
     #<FLAGS>                := ${CMAKE_C_FLAGS}
     #<CMAKE_C_LINK_FLAGS>   :=
-    #<LINK_FLAGS>           :=
+    #<LINK_FLAGS>           := ${CMAKE_EXE_LINKER_FLAGS}
     #<OBJECTS>              :=
     #<TARGET>               :=
     #<LINK_LIBRARIES>       := 
     
+    # remove <FLAGS> generator from link step
     set(CMAKE_C_LINK_EXECUTABLE "<CMAKE_C_COMPILER> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
     # default:
-    # set(CMAKE_C_LINK_EXECUTABLE "<CMAKE_C_COMPILER> <FLAGS> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
+    #set(CMAKE_C_LINK_EXECUTABLE "<CMAKE_C_COMPILER> <FLAGS> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
 endif()
 
 
