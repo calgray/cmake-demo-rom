@@ -15,6 +15,7 @@ message("N64SDK_DIR ${N64SDK_DIR}")
 # TODO: newer cpp versions output typedefs which are not supported in linker scripts
 set(CMAKE_C_PREPROCESSOR cpp-8)
 
+# original config is RELWITHDEBINFO
 add_executable(${ELF_NAME}
     asm/entry.s
     asm/rom_header.s
@@ -24,8 +25,7 @@ add_executable(${ELF_NAME}
     src/main/stage00.c
 )
 target_include_directories(${ELF_NAME} PRIVATE .)
-target_include_directories(${ELF_NAME}
-    PUBLIC
+target_include_directories(${ELF_NAME} PUBLIC
     include
     ${N64SDK_DIR}/include/n64
     ${N64SDK_DIR}/include/n64/PR
@@ -34,8 +34,13 @@ target_include_directories(${ELF_NAME}
 target_compile_definitions(${ELF_NAME} PUBLIC _FINALROM=1)
 target_compile_definitions(${ELF_NAME} PUBLIC NDEBUG=1)
 target_compile_definitions(${ELF_NAME} PUBLIC F3DEX_GBI_2=1)
-
-# original config is RELWITHDEBINFO
+# target_compile_options(${ELF_NAME} PUBLIC
+#     -march=vr4300
+#     -mtune=vr4300
+#     -mabi=32
+#     -mfix4300
+#     -ffreestanding
+# )
 
 # build boot object
 add_custom_command(TARGET ${ELF_NAME}
@@ -49,10 +54,10 @@ add_custom_command(TARGET ${ELF_NAME}
 # build linker script with gcc preprocessor
 set(LD_SCRIPT nu0.ld)
 set(MOD_FLAGS
--D_FINALROM=1 -DNDEBUG=1 -DF3DEX_GBI_2=1
--DBUILD_DIR=${BUILD_DIR}
--DN64SDK_DIR=${N64SDK_DIR}
--MMD -MP
+    -D_FINALROM=1 -DNDEBUG=1 -DF3DEX_GBI_2=1
+    -DBUILD_DIR=${BUILD_DIR}
+    -DN64SDK_DIR=${N64SDK_DIR}
+    -MMD -MP
 )
 set(MOD_INCLUDES
     -I${N64SDK_DIR}/include/n64
@@ -66,7 +71,9 @@ set(MOD_INCLUDES
 )
 add_custom_command(TARGET ${ELF_NAME}
     PRE_LINK
-    COMMAND ${CMAKE_C_PREPROCESSOR} -P -Wno-trigraphs ${MOD_INCLUDES} ${MOD_FLAGS}
+    COMMAND ${CMAKE_C_PREPROCESSOR} -P -Wno-trigraphs
+        ${MOD_INCLUDES}
+        ${MOD_FLAGS}
         -MT ${BUILD_DIR}/nu0.ld
         -MF ${BUILD_DIR}/nu0.ld.d
         -o ${BUILD_DIR}/nu0.ld
@@ -81,72 +88,37 @@ set(MODERN ON)
 if(MODERN)
     target_link_options(${ELF_NAME}
         PUBLIC
-        -T ${BUILD_DIR}/${LD_SCRIPT}
-        #gcc
-        # -march=vr4300 -mtune=vr4300 -mabi=32 -ffreestanding -mfix4300
-        # -Wl,-Map,${BUILD_DIR}/nu0.map,--no-check-sections
-        # ${BUILD_DIR}/${BOOT_OBJ}
-        #ld
-        -Map ${BUILD_DIR}/nu0.map --no-check-sections
-        #${BUILD_DIR}/${BOOT_OBJ}
+        -march=vr4300 -mtune=vr4300 -mabi=32 -ffreestanding -mfix4300
+        ${BUILD_DIR}/${BOOT_OBJ}
+        -Wl,-T,${BUILD_DIR}/${LD_SCRIPT},-Map,${BUILD_DIR}/nu0.map,--no-check-sections
+    )
+    target_link_directories(${ELF_NAME}
+        PUBLIC
+        .
+        ${BUILD_DIR}
+        ${N64SDK_DIR}
+        ${N64SDK_DIR}/lib/n64/nusys
+        ${N64SDK_DIR}/lib/n64
+        /usr/lib/gcc/mips64-elf/11.2.0/32
+        /usr/lib/gcc/mips64-elf/11.2.0
+    )
+    target_link_libraries(${ELF_NAME}
+        n64sdkmod::nusys
+        ultra_rom
+        gcc
     )
 
-    # target_link_options(${ELF_NAME}
-    #     PUBLIC
-    #     -Map nu0.map
-    #     --no-check-sections
-    #     /home/callan/Code/n64/cmake-demo-rom/external/n64sdkmod/lib/n64/nusys/nusys_rom.o
-    # )
-    # target_link_directories(${ELF_NAME}
-    #     PUBLIC
-    #     .
-    #     ${BUILD_DIR}
-    #     ${N64SDK_DIR}
-    #     ${N64SDK_DIR}/lib/n64/nusys
-    #     /usr/lib/gcc/mips64-elf/11.2.0/32
-    #     /usr/lib/gcc/mips64-elf/11.2.0
-    # )
-    # target_link_libraries(${ELF_NAME}
-    #     ultra_rom
-    #     gcc
-    # )
-    # CMAKE style
-    # target_link_libraries(${ELF_NAME}
-    #     PRIVATE ${N64SDK_DIR}/lib/n64/nusys/libnusys.a
-    #     PRIVATE ${N64SDK_DIR}/lib/n64/libultra_rom.a
-    #     PRIVATE /usr/lib/gcc/mips64-elf/11.2.0/32/libgcc.a
-    # )
-
-    #Modern CMake
-    set(LINK_LIBRARIES
-    " -L/home/callan/Code/n64/cmake-demo-rom/external/n64sdkmod/lib/n64/nusys -lnusys"
-    " -L/home/callan/Code/n64/cmake-demo-rom/external/n64sdkmod/lib/n64 -lultra_rom -lultra"
-    " -L/usr/lib/gcc/mips64-elf/11.2.0/32 -lgcc"
-    )
-    string(CONCAT LINK_LIBRARIES ${LINK_LIBRARIES})
-    #set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
-    #set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> ${LINK_LIBRARIES}")
-    set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_LINKER} <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> ${LINK_LIBRARIES}")
-else()
-
-    # NOTE: link directories must come before link libraries
-    set(CUSTOM_LINK_FLAGS
-    "-L build -T ${BUILD_DIR}/nu0.ld -Map ${BUILD_DIR}/nu0.map --no-check-sections -o ${BUILD_DIR}/nu0.elf"
-    " /home/callan/Code/n64/cmake-demo-rom/external/n64sdkmod/lib/n64/nusys/nusys_rom.o"
-    " ${BUILD_DIR}/src/main/gfxinit.o"
-    " ${BUILD_DIR}/src/main/graphic.o"
-    " ${BUILD_DIR}/src/main/main.o"
-    " ${BUILD_DIR}/src/main/stage00.o"
-    " ${BUILD_DIR}/asm/entry.o"
-    " ${BUILD_DIR}/asm/rom_header.o"
-    " ${BUILD_DIR}/boot.6102.o"
-    " -L/home/callan/Code/n64/cmake-demo-rom/external/n64sdkmod/lib/n64/nusys -lnusys"
-    " -L/home/callan/Code/n64/cmake-demo-rom/external/n64sdkmod/lib/n64 -lultra_rom -lultra"
-    " -L/usr/lib/gcc/mips64-elf/11.2.0/32 -lgcc"
-    " -o ${CMAKE_CURRENT_BINARY_DIR}/${ELF_NAME}"
-    )
-    string(CONCAT CUSTOM_LINK_FLAGS ${CUSTOM_LINK_FLAGS})
-    set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_LINKER} ${CUSTOM_LINK_FLAGS}")
+    #<CMAKE_C_COMPILER>     := ${CMAKE_C_COMPILER}
+    #<FLAGS>                := ${CMAKE_C_FLAGS}
+    #<CMAKE_C_LINK_FLAGS>   :=
+    #<LINK_FLAGS>           :=
+    #<OBJECTS>              :=
+    #<TARGET>               :=
+    #<LINK_LIBRARIES>       := 
+    
+    set(CMAKE_C_LINK_EXECUTABLE "<CMAKE_C_COMPILER> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
+    # default:
+    # set(CMAKE_C_LINK_EXECUTABLE "<CMAKE_C_COMPILER> <FLAGS> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
 endif()
 
 
