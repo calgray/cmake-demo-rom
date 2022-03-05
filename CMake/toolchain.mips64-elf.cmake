@@ -66,24 +66,24 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 # this makes the test compiles use static library option so that we don't need to pre-set linker flags and scripts
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
+# use `mips64-elf-gcc --help=target`
+
 # set the flags for an N64's architecture
 set(MCPU_FLAGS "-march=vr4300 -mtune=vr4300 -mabi=32 -ffreestanding -mfix4300")
 
-set(CMAKE_C_CXX_FLAGS "${MCPU_FLAGS} -mno-long-calls -Wall -Wno-pointer-sign")
-set(CMAKE_C_CXX_FLAGS_DEBUG   "-O0 -g -ggdb3")
-set(CMAKE_C_CXX_FLAGS_RELEASE "-O2") 
+set(CMAKE_C_CXX_FLAGS "-G0 ${MCPU_FLAGS} -mno-long-calls -Wall -Wno-pointer-sign")
+set(CMAKE_C_CXX_FLAGS_DEBUG   "-O0 -g -ggdb3") #add option -ggdb3 
+
+set(CMAKE_ASM_FLAGS "${CMAKE_C_CXX_FLAGS} -x assembler-with-cpp" CACHE INTERNAL "asm compiler flags")
+#set(CMAKE_ASM_FLAGS_DEBUG   "" )
+#set(CMAKE_ASM_FLAGS_RELEASE "" )
 
 set(CMAKE_C_FLAGS "${CMAKE_C_CXX_FLAGS}" CACHE INTERNAL "c compiler flags")
 set(CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_CXX_FLAGS_DEBUG}" )
-set(CMAKE_C_FLAGS_RELEASE " ${CMAKE_C_CXX_FLAGS_RELEASE}" )
 
 set(CMAKE_CXX_FLAGS "${CMAKE_C_CXX_FLAGS}" CACHE INTERNAL "cxx compiler flags")
 set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_C_CXX_FLAGS_DEBUG}" )
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_CXX_FLAGS_RELEASE}" )
-
-set(CMAKE_ASM_FLAGS "${MCPU_FLAGS}" CACHE INTERNAL "asm compiler flags")
-set(CMAKE_ASM_FLAGS_DEBUG   "" )
-set(CMAKE_ASM_FLAGS_RELEASE "" )
 
 #set(CMAKE_EXE_LINKER_FLAGS "-G0 ${LINKER_FLAGS_START} -lc -lm ${LINKER_FLAGS_END}" CACHE INTERNAL "exe link flags")
-set(CMAKE_EXE_LINKER_FLAGS "-G0 ${LINKER_FLAGS_START} ${LINKER_FLAGS_END}" CACHE INTERNAL "exe link flags")
+#set(CMAKE_EXE_LINKER_FLAGS "-G0 ${LINKER_FLAGS_START} ${LINKER_FLAGS_END}" CACHE INTERNAL "exe link flags")
+set(CMAKE_EXE_LINKER_FLAGS "${LINKER_FLAGS_START} ${LINKER_FLAGS_END}" CACHE INTERNAL "exe link flags")

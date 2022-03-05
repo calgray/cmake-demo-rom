@@ -34,12 +34,8 @@ target_include_directories(${ELF_NAME}
 target_compile_definitions(${ELF_NAME} PUBLIC _FINALROM=1)
 target_compile_definitions(${ELF_NAME} PUBLIC NDEBUG=1)
 target_compile_definitions(${ELF_NAME} PUBLIC F3DEX_GBI_2=1)
-#target_compile_options(${ELF_NAME} PUBLIC "$<$<CONFIG:RELEASE>:${C_RELEASE_OPTIONS}>")
 
-# RELEASE
-set(CMAKE_C_FLAGS "-G0 -O2 -g ${MCPU_FLAGS}")
-set(CMAKE_ASM_FLAGS "-G0 -O2 -g ${MCPU_FLAGS} -x assembler-with-cpp")
-#-MF build/asm/entry.d
+# original config is RELWITHDEBINFO
 
 # build boot object
 add_custom_command(TARGET ${ELF_NAME}
@@ -50,9 +46,7 @@ add_custom_command(TARGET ${ELF_NAME}
     BYPRODUCTS ${BUILD_DIR}/${BOOT_OBJ}
 )
 
-
 # build linker script with gcc preprocessor
-# TODO: use #${CMAKE_CXX_FLAGS}
 set(LD_SCRIPT nu0.ld)
 set(MOD_FLAGS
 -D_FINALROM=1 -DNDEBUG=1 -DF3DEX_GBI_2=1
@@ -61,16 +55,15 @@ set(MOD_FLAGS
 -MMD -MP
 )
 set(MOD_INCLUDES
-    -I${libultra_DIR}/include/n64
-    -I${libultra_DIR}/include/n64/PR
-    -I${libultra_DIR}/include/n64/nusys
+    -I${N64SDK_DIR}/include/n64
+    -I${N64SDK_DIR}/include/n64/PR
+    -I${N64SDK_DIR}/include/n64/nusys
     -Iinclude
     -I${CMAKE_CURRENT_BINARY_DIR}
     -I${CMAKE_CURRENT_BINARY_DIR}/include
     -Isrc
     -I.
 )
-
 add_custom_command(TARGET ${ELF_NAME}
     PRE_LINK
     COMMAND ${CMAKE_C_PREPROCESSOR} -P -Wno-trigraphs ${MOD_INCLUDES} ${MOD_FLAGS}
@@ -80,6 +73,7 @@ add_custom_command(TARGET ${ELF_NAME}
         ${CMAKE_CURRENT_LIST_DIR}/nu0.ld
     COMMENT "Generating linker script nu0.ld"
     MAIN_DEPENDENCY ${CMAKE_CURRENT_LIST_DIR}/nu0.ld
+    DEPENDS ${BUILD_DIR}/${BOOT_OBJ}
     BYPRODUCTS ${BUILD_DIR}/nu0.ld ${BUILD_DIR}/nu0.ld.d
 )
 
@@ -89,9 +83,12 @@ if(MODERN)
         PUBLIC
         -T ${BUILD_DIR}/${LD_SCRIPT}
         #gcc
-        #-Wl,-Map,${BUILD_DIR}/nu0.map,--no-check-sections
+        # -march=vr4300 -mtune=vr4300 -mabi=32 -ffreestanding -mfix4300
+        # -Wl,-Map,${BUILD_DIR}/nu0.map,--no-check-sections
+        # ${BUILD_DIR}/${BOOT_OBJ}
         #ld
         -Map ${BUILD_DIR}/nu0.map --no-check-sections
+        #${BUILD_DIR}/${BOOT_OBJ}
     )
 
     # target_link_options(${ELF_NAME}
@@ -115,11 +112,9 @@ if(MODERN)
     # )
     # CMAKE style
     # target_link_libraries(${ELF_NAME}
-    #     PRIVATE n64sdkmod::ultra
-    #     PRIVATE n64sdkmod::nusys
-    #     PRIVATE n64sdkmod::nualsgi
-    #     PRIVATE n64sdkmod::nualstl
-    #     PRIVATE -lgcc
+    #     PRIVATE ${N64SDK_DIR}/lib/n64/nusys/libnusys.a
+    #     PRIVATE ${N64SDK_DIR}/lib/n64/libultra_rom.a
+    #     PRIVATE /usr/lib/gcc/mips64-elf/11.2.0/32/libgcc.a
     # )
 
     #Modern CMake
@@ -130,6 +125,7 @@ if(MODERN)
     )
     string(CONCAT LINK_LIBRARIES ${LINK_LIBRARIES})
     #set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
+    #set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> ${LINK_LIBRARIES}")
     set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_LINKER} <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> ${LINK_LIBRARIES}")
 else()
 
