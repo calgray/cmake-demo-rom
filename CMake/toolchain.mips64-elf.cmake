@@ -78,6 +78,9 @@ if(NOT TARGET n64)
         $<$<COMPILE_LANGUAGE:CXX>:-G0 -mno-long-calls -Wall -Wno-pointer-sign>
         $<$<CONFIG:DEBUG>:-ggdb3>
     )
+    target_link_options(n64 INTERFACE
+        -march=vr4300 -mtune=vr4300 -mabi=32 -ffreestanding -mfix4300
+    )
 endif()
 
 #set(CMAKE_EXE_LINKER_FLAGS "-G0 ${LINKER_FLAGS_START} -lc -lm ${LINKER_FLAGS_END}" CACHE INTERNAL "exe link flags")

@@ -32,11 +32,14 @@ target_include_directories(${ELF_NAME} PUBLIC
     ${N64SDK_DIR}/include/n64/PR
     ${N64SDK_DIR}/include/n64/nusys
 )
-target_compile_definitions(${ELF_NAME} PUBLIC _FINALROM=1)
-target_compile_definitions(${ELF_NAME} PUBLIC NDEBUG=1)
-target_compile_definitions(${ELF_NAME} PUBLIC F3DEX_GBI_2=1)
+target_compile_definitions(${ELF_NAME} PUBLIC 
+    _FINALROM=1
+    F3DEX_GBI_2=1
+)
 
+###################
 # build boot object
+###################
 add_custom_command(TARGET ${ELF_NAME}
     PRE_BUILD
     COMMAND ${CMAKE_OBJCOPY} -I binary -B mips -O elf32-bigmips ${BOOT_SRC} ${BUILD_DIR}/${BOOT_OBJ}
@@ -45,10 +48,12 @@ add_custom_command(TARGET ${ELF_NAME}
     BYPRODUCTS ${BUILD_DIR}/${BOOT_OBJ}
 )
 
+#####################
 # build linker script with gcc preprocessor
+#####################
 set(LD_SCRIPT nu0.ld)
 set(MOD_FLAGS
-    -D_FINALROM=1 -DNDEBUG=1 -DF3DEX_GBI_2=1
+    -D_FINALROM=1 -DF3DEX_GBI_2=1
     -DBUILD_DIR=${BUILD_DIR}
     -DN64SDK_DIR=${N64SDK_DIR}
     -MMD -MP
@@ -78,55 +83,42 @@ add_custom_command(TARGET ${ELF_NAME}
     BYPRODUCTS ${BUILD_DIR}/nu0.ld ${BUILD_DIR}/nu0.ld.d
 )
 
-set(MODERN ON)
-if(MODERN)
-    target_link_options(${ELF_NAME}
-        PUBLIC
-        -march=vr4300 -mtune=vr4300 -mabi=32 -ffreestanding -mfix4300
-        ${BUILD_DIR}/${BOOT_OBJ}
-        -Wl,-T,${BUILD_DIR}/${LD_SCRIPT},-Map,${BUILD_DIR}/nu0.map,--no-check-sections
-    )
-    target_link_directories(${ELF_NAME}
-        PUBLIC
-        .
-        ${BUILD_DIR}
-        ${N64SDK_DIR}
-        ${N64SDK_DIR}/lib/n64/nusys
-        ${N64SDK_DIR}/lib/n64
-        /usr/lib/gcc/mips64-elf/11.2.0/32
-        /usr/lib/gcc/mips64-elf/11.2.0
-    )
-    target_link_libraries(${ELF_NAME}
-        n64sdkmod::nusys
-        ultra_rom
-        gcc
-    )
+###########
+# LINKING
+###########
+target_link_options(${ELF_NAME}
+    PUBLIC
+    ${BUILD_DIR}/${BOOT_OBJ}
+    -Wl,-T,${BUILD_DIR}/${LD_SCRIPT},-Map,${BUILD_DIR}/nu0.map,--no-check-sections
+)
+target_link_directories(${ELF_NAME}
+    PUBLIC
+    .
+    ${BUILD_DIR}
+    ${N64SDK_DIR}
+    /usr/lib/gcc/mips64-elf/11.2.0/32
+    /usr/lib/gcc/mips64-elf/11.2.0
+)
+target_link_libraries(${ELF_NAME}
+    n64sdkmod::nusys
+    n64sdkmod::ultra_rom
+    gcc
+)
 
-    #<CMAKE_C_COMPILER>     := ${CMAKE_C_COMPILER}
-    #<FLAGS>                := ${CMAKE_C_FLAGS}
-    #<CMAKE_C_LINK_FLAGS>   :=
-    #<LINK_FLAGS>           := ${CMAKE_EXE_LINKER_FLAGS}
-    #<OBJECTS>              :=
-    #<TARGET>               :=
-    #<LINK_LIBRARIES>       := 
-    
-    # remove <FLAGS> generator from link step
-    set(CMAKE_C_LINK_EXECUTABLE "<CMAKE_C_COMPILER> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
-    # default:
-    #set(CMAKE_C_LINK_EXECUTABLE "<CMAKE_C_COMPILER> <FLAGS> <CMAKE_C_LINK_FLAGS> <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
-endif()
-
-
+######################
+# Pad (for bootcode?)
+######################
 add_custom_command(TARGET ${ELF_NAME}
     POST_BUILD
-    # pad (for bootcode?)
     COMMAND ${CMAKE_OBJCOPY} --pad-to=0x100000 --gap-fill=0xFF $<TARGET_FILE:${ELF_NAME}> ${ROM_NAME} -O binary
     COMMAND makemask ${ROM_NAME}
     BYPRODUCTS ${ROM_NAME}
     COMMENT "Generating ${ROM_NAME}"
 )
 
+#################
 # Common Failures
+#################
 # undefined reference to `NU_SPEC_BOOT_STACK`
 # - missing "-x assembler-with-cpp" on assembling asm objects
 

@@ -52,6 +52,7 @@ elseif(TOOLCHAIN_N64SDKMOD)
 
     # build ultra and nusys projects
     add_subdirectory(demos/nusys-demos/nu0)
+    #add_subdirectory(demos/nusys-demos/nu1)
 
 elseif(TOOLCHAIN_N64CHAIN)
     add_custom_command(TARGET ${ELF_NAME}

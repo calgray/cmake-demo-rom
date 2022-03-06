@@ -11,6 +11,12 @@ set_target_properties(n64sdkmod::ultra
     IMPORTED_LOCATION ${N64SDK_DIR}/lib/n64/libultra.a
     INTERFACE_INCLUDE_DIRECTORIES ${N64SDK_DIR}/include/n64
 )
+add_library(n64sdkmod::ultra_rom STATIC IMPORTED)
+set_target_properties(n64sdkmod::ultra_rom
+    PROPERTIES
+    IMPORTED_LOCATION ${N64SDK_DIR}/lib/n64/libultra_rom.a
+    INTERFACE_INCLUDE_DIRECTORIES ${N64SDK_DIR}/include/n64
+)
 add_library(n64sdkmod::nusys STATIC IMPORTED)
 set_target_properties(n64sdkmod::nusys
     PROPERTIES
