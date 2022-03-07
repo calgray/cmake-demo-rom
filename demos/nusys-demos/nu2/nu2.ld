@@ -53,36 +53,36 @@ SECTIONS
    {
       /* text */
 		BUILD_DIR/asm/entry.o(.start);
-      /usr/lib/n64/nusys/nusys_rom.o(.text);
+      N64SDK_DIR/lib/n64/nusys/nusys_rom.o(.text);
       BUILD_DIR/src/main*.o(.text);
 
       */libultra_rom.a:*.o(.text);
       */libnusys.a:*.o(.text);
       */libgcc.a:*.o(.text);
-      /usr/lib/n64/PR/rspboot.o(.text);
-      /usr/lib/n64/PR/gspF3DEX2.fifo.o(.text);
-      /usr/lib/n64/PR/gspL3DEX2.fifo.o(.text);
-      /usr/lib/n64/PR/gspF3DEX2.Rej.fifo.o(.text);
-      /usr/lib/n64/PR/gspF3DEX2.NoN.fifo.o(.text);
-      /usr/lib/n64/PR/gspF3DLX2.Rej.fifo.o(.text);
-      /usr/lib/n64/PR/gspS2DEX2.fifo.o(.text);
+      N64SDK_DIR/lib/n64/PR/rspboot.o(.text);
+      N64SDK_DIR/lib/n64/PR/gspF3DEX2.fifo.o(.text);
+      N64SDK_DIR/lib/n64/PR/gspL3DEX2.fifo.o(.text);
+      N64SDK_DIR/lib/n64/PR/gspF3DEX2.Rej.fifo.o(.text);
+      N64SDK_DIR/lib/n64/PR/gspF3DEX2.NoN.fifo.o(.text);
+      N64SDK_DIR/lib/n64/PR/gspF3DLX2.Rej.fifo.o(.text);
+      N64SDK_DIR/lib/n64/PR/gspS2DEX2.fifo.o(.text);
 
       /* data */
-      /usr/lib/n64/nusys/nusys_rom.o(.data*);
+      N64SDK_DIR/lib/n64/nusys/nusys_rom.o(.data*);
       BUILD_DIR/src/main*.o(.data*);
 
       */libultra_rom.a:*.o(.data*);
       */libnusys.a:*.o(.data*);
-      /usr/lib/n64/PR/rspboot.o(.data*);
-      /usr/lib/n64/PR/gspF3DEX2.fifo.o(.data*);
-      /usr/lib/n64/PR/gspL3DEX2.fifo.o(.data*);
-      /usr/lib/n64/PR/gspF3DEX2.Rej.fifo.o(.data*);
-      /usr/lib/n64/PR/gspF3DEX2.NoN.fifo.o(.data*);
-      /usr/lib/n64/PR/gspF3DLX2.Rej.fifo.o(.data*);
-      /usr/lib/n64/PR/gspS2DEX2.fifo.o(.data*);
+      N64SDK_DIR/lib/n64/PR/rspboot.o(.data*);
+      N64SDK_DIR/lib/n64/PR/gspF3DEX2.fifo.o(.data*);
+      N64SDK_DIR/lib/n64/PR/gspL3DEX2.fifo.o(.data*);
+      N64SDK_DIR/lib/n64/PR/gspF3DEX2.Rej.fifo.o(.data*);
+      N64SDK_DIR/lib/n64/PR/gspF3DEX2.NoN.fifo.o(.data*);
+      N64SDK_DIR/lib/n64/PR/gspF3DLX2.Rej.fifo.o(.data*);
+      N64SDK_DIR/lib/n64/PR/gspS2DEX2.fifo.o(.data*);
 
       /* rodata */
-      /usr/lib/n64/nusys/nusys_rom.o(.*rodata*);
+      N64SDK_DIR/lib/n64/nusys/nusys_rom.o(.*rodata*);
       BUILD_DIR/src/main*.o(.*rodata*);
 
       */libultra_rom.a:*.o(.*rodata*);
@@ -92,9 +92,9 @@ SECTIONS
    END_SEG(code)
    BEGIN_NOLOAD(code)
    {
-      /usr/lib/n64/nusys/nusys_rom.o(COMMON);
-      /usr/lib/n64/nusys/nusys_rom.o(.scommon);
-      /usr/lib/n64/nusys/nusys_rom.o(.*bss*);
+      N64SDK_DIR/lib/n64/nusys/nusys_rom.o(COMMON);
+      N64SDK_DIR/lib/n64/nusys/nusys_rom.o(.scommon);
+      N64SDK_DIR/lib/n64/nusys/nusys_rom.o(.*bss*);
       BUILD_DIR/src/main*.o(.*bss*);
 
       */libultra_rom.a:*.o(COMMON);

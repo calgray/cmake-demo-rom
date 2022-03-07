@@ -1,6 +1,6 @@
 
-set(TARGET_NAME NU0-DEMO)
-set(LD_SCRIPT nu0.ld)
+set(TARGET_NAME NU2-DEMO)
+set(LD_SCRIPT nu2.ld)
 # replace /usr with N64SDK_DIR
 
 # build ROM
@@ -22,6 +22,7 @@ add_executable(${ELF_NAME}
     src/main/graphic.c
     src/main/main.c
     src/main/stage00.c
+    src/main/stage01.c
 )
 target_link_libraries(${ELF_NAME} n64)
 target_include_directories(${ELF_NAME} PRIVATE .)
@@ -118,5 +119,3 @@ add_custom_command(TARGET ${ELF_NAME}
 # undefined reference to `NU_SPEC_BOOT_STACK`
 # - missing "-x assembler-with-cpp" on assembling asm objects
 
-# undefined reference to `__udivdi3'
-# - include gcc

@@ -1,6 +1,6 @@
 
-set(TARGET_NAME NU0-DEMO)
-set(LD_SCRIPT nu0.ld)
+set(TARGET_NAME NU3-DEMO)
+set(LD_SCRIPT nu3.ld)
 # replace /usr with N64SDK_DIR
 
 # build ROM
@@ -22,11 +22,13 @@ add_executable(${ELF_NAME}
     src/main/graphic.c
     src/main/main.c
     src/main/stage00.c
+    sound/sound_data.s
 )
 target_link_libraries(${ELF_NAME} n64)
 target_include_directories(${ELF_NAME} PRIVATE .)
 target_include_directories(${ELF_NAME} PUBLIC
     include
+    sound
     ${N64SDK_DIR}/include/n64
     ${N64SDK_DIR}/include/n64/PR
     ${N64SDK_DIR}/include/n64/nusys
@@ -51,7 +53,10 @@ add_custom_command(TARGET ${ELF_NAME}
 # build linker script with gcc preprocessor
 #####################
 set(MOD_FLAGS
-    -D_FINALROM=1 -DF3DEX_GBI_2=1
+    -DNDEBUG=1
+    -D_FINALROM=1
+    -DF3DEX_GBI_2=1
+    -DN_AUDIO=1
     -DBUILD_DIR=${BUILD_DIR}
     -DN64SDK_DIR=${N64SDK_DIR}
     -MMD -MP
@@ -60,10 +65,11 @@ set(MOD_INCLUDES
     -I${N64SDK_DIR}/include/n64
     -I${N64SDK_DIR}/include/n64/PR
     -I${N64SDK_DIR}/include/n64/nusys
-    -Iinclude
     -I${CMAKE_CURRENT_BINARY_DIR}
     -I${CMAKE_CURRENT_BINARY_DIR}/include
+    -Iinclude
     -Isrc
+    -Isound
     -I.
 )
 add_custom_command(TARGET ${ELF_NAME}
@@ -95,7 +101,10 @@ target_link_directories(${ELF_NAME}
     ${BUILD_DIR}
     ${N64SDK_DIR}
 )
+# order specific
 target_link_libraries(${ELF_NAME}
+    n64sdkmod::nualsgi_n
+    n64sdkmod::n_audio
     n64sdkmod::nusys
     n64sdkmod::ultra_rom
     gcc
@@ -118,5 +127,3 @@ add_custom_command(TARGET ${ELF_NAME}
 # undefined reference to `NU_SPEC_BOOT_STACK`
 # - missing "-x assembler-with-cpp" on assembling asm objects
 
-# undefined reference to `__udivdi3'
-# - include gcc
