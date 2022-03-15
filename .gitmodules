@@ -7,3 +7,6 @@
 [submodule "external/fatfs"]
 	path = external/fatfs
 	url = https://github.com/abbrev/fatfs.git
+[submodule "external/n64sdkmod"]
+	path = external/n64sdkmod
+	url = git@github.com:calgray/n64sdkmod.git

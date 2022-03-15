@@ -1,3 +1,17 @@
 {
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "C_Cpp.default.includePath": [
+        "${default}",
+        "${workspaceFolder}/include/**",
+        "${workspaceFolder}/external/n64sdkmod/include/n64",
+        "${workspaceFolder}/external/n64sdkmod/include/n64/nusys",
+        "/usr/mips64-elf/include/**",
+      ],
+      "C_Cpp.default.browse.path": [
+        "${default}",
+        "${workspaceFolder}/include/**",
+        "${workspaceFolder}/external/n64sdkmod/include/n64",
+        "${workspaceFolder}/external/n64sdkmod/include/n64/nusys",
+        "/usr/mips64-elf/include/**",
+      ],
 }

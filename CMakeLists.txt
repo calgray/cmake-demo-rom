@@ -50,13 +50,23 @@ elseif(TOOLCHAIN_N64SDKMOD)
 
     find_package(n64sdkmod REQUIRED)
 
-    # build ultra and nusys projects
+    # generate ultra and nusys demos
     add_subdirectory(demos/nusys-demos/nu0)
     add_subdirectory(demos/nusys-demos/nu1)
     add_subdirectory(demos/nusys-demos/nu2)
     add_subdirectory(demos/nusys-demos/nu3)
     add_subdirectory(demos/nusys-demos/nu4)
     add_subdirectory(demos/nusys-demos/nu5)
+    add_subdirectory(demos/nusys-demos/nugfxinit)
+    #add_subdirectory(demos/nusys-demos/nugptest)
+    #add_subdirectory(demos/nusys-demos/nuhighreso)
+    #add_subdirectory(demos/nusys-demos/nuhvq)
+    #add_subdirectory(demos/nusys-demos/nulod)
+    #add_subdirectory(demos/nusys-demos/numirror)
+    #add_subdirectory(demos/nusys-demos/nunospak)
+    #add_subdirectory(demos/nusys-demos/nuoverlay)
+    add_subdirectory(demos/nusys-demos/nusnake)
+    #add_subdirectory(demos/nusys-demos/nuxbus)
 
 elseif(TOOLCHAIN_N64CHAIN)
     add_custom_command(TARGET ${ELF_NAME}
@@ -64,7 +74,7 @@ elseif(TOOLCHAIN_N64CHAIN)
         COMMAND ${CHECKSUM_TOOL} ARGS ${ROM_HEADER}
     )
 else() #add some other compilation flags
-#show error?
+    #show error?
 endif()
 
 unset(TOOLCHAIN_N64SDKMOD CACHE)
